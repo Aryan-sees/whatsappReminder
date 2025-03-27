@@ -31,19 +31,24 @@ app.post('/send', async (req, res) => {
   const message = req.body.message;
   const groupName = 'ReminderWA';
 
+  res.status(202).send('🚀 Message is being processed'); // respond immediately
+
   try {
     const chats = await client.getChats();
     const group = chats.find(chat => chat.isGroup && chat.name === groupName);
 
-    if (!group) return res.status(404).send('Group not found');
+    if (!group) {
+      console.error('❌ Group not found');
+      return;
+    }
 
     await client.sendMessage(group.id._serialized, message);
-    res.send('✅ Message sent to group!');
+    console.log('✅ Message sent to group!');
   } catch (error) {
-    console.error(error);
-    res.status(500).send('❌ Error sending message');
+    console.error('❌ Error sending message:', error);
   }
 });
+
 
 app.listen(3000, () => {
   console.log('🚀 Webhook listening on port 3000');
