@@ -1,7 +1,7 @@
-const { Client, LocalAuth } = require('whatsapp-web.js');
-const qrcode = require('qrcode-terminal');
 const express = require('express');
 const bodyParser = require('body-parser');
+const { Client, LocalAuth } = require('whatsapp-web.js');
+const qrcode = require('qrcode-terminal');
 
 const app = express();
 const port = 3000;
@@ -12,29 +12,23 @@ const client = new Client({
   authStrategy: new LocalAuth(),
   puppeteer: {
     headless: true,
-    args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-dev-shm-usage',
-      '--disable-accelerated-2d-canvas',
-      '--no-first-run',
-      '--no-zygote',
-      '--single-process',
-      '--disable-gpu'
-    ]
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
   }
 });
 
+// Generate QR in terminal
 client.on('qr', (qr) => {
+  console.log('📲 Scan this QR in your WhatsApp app:');
   qrcode.generate(qr, { small: true });
-  console.log(`🔗 Optional QR Image Link: https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qr)}&size=300x300`);
 });
 
 client.on('ready', () => {
-  console.log('✅ WhatsApp is ready!');
+  console.log('✅ WhatsApp Client is ready!');
 });
 
-// Send message to group
+client.initialize();
+
+// Route to send message to a specific group
 app.post('/send', async (req, res) => {
   const message = req.body.message;
   const groupName = 'ReminderWA';
@@ -55,7 +49,10 @@ app.post('/send', async (req, res) => {
   }
 });
 
-client.initialize();
+// Root endpoint (optional)
+app.get('/', (req, res) => {
+  res.send('🟢 WhatsApp Group Bot is live!');
+});
 
 app.listen(port, () => {
   console.log(`🚀 Webhook listening on port ${port}`);
