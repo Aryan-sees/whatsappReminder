@@ -1,6 +1,6 @@
 FROM node:18-slim
 
-# Install required dependencies for Puppeteer Chromium
+# Install Chrome dependencies for puppeteer
 RUN apt-get update && apt-get install -y \
     wget \
     ca-certificates \
@@ -19,9 +19,11 @@ RUN apt-get update && apt-get install -y \
     libxdamage1 \
     libxrandr2 \
     xdg-utils \
-    && apt-get clean
+    --no-install-recommends && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-# Set working directory
+# Create app dir
 WORKDIR /app
 
 # Copy files
@@ -33,5 +35,5 @@ RUN npm install
 # Expose port
 EXPOSE 3000
 
-# Start the bot
+# Run bot
 CMD ["node", "index.js"]
