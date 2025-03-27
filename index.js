@@ -1,26 +1,18 @@
 const express = require('express');
+const { Client } = require('whatsapp-web.js');
+const qrcode = require('qrcode');
 const bodyParser = require('body-parser');
-const { Client, LocalAuth } = require('whatsapp-web.js');
-const qrcode = require('qrcode'); // using qrcode instead of qrcode-terminal
 
 const app = express();
-const port = 3000;
-
 app.use(bodyParser.json());
 
-let qrImageUrl = ''; // Store QR data URL
+const client = new Client();
 
-const client = new Client({
-  authStrategy: new LocalAuth(),
-  puppeteer: {
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
-  }
-});
-
-client.on('qr', async (qr) => {
-  console.log('📲 QR received, generating image URL...');
-  qrImageUrl = await qrcode.toDataURL(qr);
+client.on('qr', (qr) => {
+  const encoded = encodeURIComponent(qr);
+  const qrLink = `https://api.qrserver.com/v1/create-qr-code/?data=${encoded}&size=300x300`;
+  console.log('📲 Scan this QR from link:');
+  console.log(qrLink);
 });
 
 client.on('ready', () => {
@@ -29,23 +21,7 @@ client.on('ready', () => {
 
 client.initialize();
 
-// Endpoint to get QR Code image
-app.get('/qr', (req, res) => {
-  if (!qrImageUrl) {
-    return res.status(404).send('QR not generated yet.');
-  }
-
-  const html = `
-    <html>
-      <body style="display:flex;align-items:center;justify-content:center;height:100vh;">
-        <img src="${qrImageUrl}" />
-      </body>
-    </html>
-  `;
-  res.send(html);
-});
-
-// Group message endpoint
+// Send message to group "ReminderWA"
 app.post('/send', async (req, res) => {
   const message = req.body.message;
   const groupName = 'ReminderWA';
@@ -54,9 +30,7 @@ app.post('/send', async (req, res) => {
     const chats = await client.getChats();
     const group = chats.find(chat => chat.isGroup && chat.name === groupName);
 
-    if (!group) {
-      return res.status(404).send('Group not found');
-    }
+    if (!group) return res.status(404).send('Group not found');
 
     await client.sendMessage(group.id._serialized, message);
     res.send('✅ Message sent to group!');
@@ -66,6 +40,6 @@ app.post('/send', async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`🚀 Server running at http://localhost:${port}`);
+app.listen(3000, () => {
+  console.log('🚀 Webhook listening on port 3000');
 });
