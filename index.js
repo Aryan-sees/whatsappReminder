@@ -1,6 +1,7 @@
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const express = require('express');
 const bodyParser = require('body-parser');
+const qrcode = require('qrcode-terminal');
 
 const app = express();
 const PORT = 3000;
@@ -18,8 +19,8 @@ app.use(bodyParser.json());
 
 // QR Scan Log
 client.on('qr', (qr) => {
-  console.log('\n📲 Scan this QR in your WhatsApp app:');
-  console.log(qr);
+  console.log('📲 Scan this QR Code:');
+  qrcode.generate(qr, { small: true });
 });
 
 // Ready Log
