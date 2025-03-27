@@ -18,10 +18,12 @@ const client = new Client({
 app.use(bodyParser.json());
 
 // QR Scan Log
+
 client.on('qr', (qr) => {
   console.log('📲 Scan this QR Code:');
-  qrcode.generate(qr, { small: true });
+  qrcode.generate(qr, { small: true }); // This will show visual QR in logs
 });
+
 
 // Ready Log
 client.on('ready', () => {
