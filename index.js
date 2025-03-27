@@ -20,7 +20,7 @@ client.on('ready', () => {
 app.post('/send-group', async (req, res) => {
   const { groupName, message } = req.body;
   const chats = await client.getChats();
-  const group = chats.find(chat => chat.isGroup && chat.name === groupName);
+  const group = chats.find(chat => chat.isGroup && chat.name === ReminderWA);
 
   if (group) {
     await group.sendMessage(message);
