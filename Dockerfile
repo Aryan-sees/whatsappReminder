@@ -1,6 +1,6 @@
 FROM node:18-slim
 
-# Install Chrome dependencies for puppeteer
+# Install Chromium dependencies required by puppeteer
 RUN apt-get update && apt-get install -y \
     wget \
     ca-certificates \
@@ -19,21 +19,23 @@ RUN apt-get update && apt-get install -y \
     libxdamage1 \
     libxrandr2 \
     xdg-utils \
+    libu2f-udev \
+    libvulkan1 \
     --no-install-recommends && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Create app dir
+# Set working directory
 WORKDIR /app
 
-# Copy files
+# Copy project files
 COPY . .
 
-# Install dependencies
-RUN npm install
+# Install dependencies (with legacy peer deps to avoid puppeteer issues)
+RUN npm install --legacy-peer-deps
 
-# Expose port
+# Expose the bot port
 EXPOSE 3000
 
-# Run bot
+# Run your bot
 CMD ["node", "index.js"]
