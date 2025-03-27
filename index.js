@@ -31,23 +31,29 @@ app.post('/send', async (req, res) => {
   const message = req.body.message;
   const groupName = 'ReminderWA';
 
-  res.status(202).send('🚀 Message is being processed'); // respond immediately
+  console.log('📥 Received request with message:', message);
 
   try {
     const chats = await client.getChats();
     const group = chats.find(chat => chat.isGroup && chat.name === groupName);
 
     if (!group) {
-      console.error('❌ Group not found');
-      return;
+      console.log('❌ Group not found');
+      return res.status(404).send('Group not found');
     }
 
+    console.log('📤 Sending message to:', group.name);
+
     await client.sendMessage(group.id._serialized, message);
-    console.log('✅ Message sent to group!');
+
+    console.log('✅ Message sent successfully!');
+    res.status(200).send('✅ Message sent!');
   } catch (error) {
-    console.error('❌ Error sending message:', error);
+    console.error('❌ Error while sending message:', error);
+    res.status(500).send('❌ Error sending message');
   }
 });
+
 
 
 app.listen(3000, () => {
