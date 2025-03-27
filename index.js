@@ -19,9 +19,11 @@ app.use(bodyParser.json());
 
 // QR Scan Log
 
+const qrcode = require('qrcode-terminal');
 client.on('qr', (qr) => {
-  console.log('📲 Scan this QR Code:');
-  qrcode.generate(qr, { small: true }); // This will show visual QR in logs
+  qrcode.generate(qr, { small: true });
+  console.log('\n🔗 Open this URL in any QR scanner website:');
+  console.log(`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qr)}&size=300x300`);
 });
 
 
