@@ -2,12 +2,16 @@ const express = require('express');
 const { Client } = require('whatsapp-web.js');
 const qrcode = require('qrcode');
 const bodyParser = require('body-parser');
+const puppeteer = require('puppeteer'); // ✅ full puppeteer
 
 const app = express();
 app.use(bodyParser.json());
 
+const chromiumPath = puppeteer.executablePath(); // ✅ get bundled Chromium path
+
 const client = new Client({
   puppeteer: {
+    executablePath: chromiumPath,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   }
 });
@@ -24,19 +28,15 @@ client.on('ready', () => {
 
 client.initialize();
 
-// ✅ POST /send { "number": "91XXXXXXXXXX", "message": "Hi there!" }
+// POST /send { "number": "91XXXXXXXXXX", "message": "Hello there!" }
 app.post('/send', async (req, res) => {
   const { number, message } = req.body;
-
-  console.log("Reached here");
 
   if (!number || !message) {
     return res.status(400).send('❌ Missing number or message');
   }
 
   const chatId = `${number}@c.us`;
-
-  console.log("Reached here 2");
 
   try {
     await client.sendMessage(chatId, message);
@@ -51,3 +51,5 @@ app.post('/send', async (req, res) => {
 app.listen(3000, () => {
   console.log('🚀 Server listening on port 3000');
 });
+
+
