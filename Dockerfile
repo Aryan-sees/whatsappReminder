@@ -1,6 +1,6 @@
-FROM node:18-slim
+FROM node:18
 
-# Install Chromium dependencies required by Puppeteer
+# Install Chromium and dependencies required by Puppeteer
 RUN apt-get update && apt-get install -y \
     wget \
     ca-certificates \
@@ -24,21 +24,25 @@ RUN apt-get update && apt-get install -y \
     libdrm2 \
     libgbm1 \
     libxshmfence1 \
+    chromium \
     --no-install-recommends && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Set the working directory
+# Set environment variables to use Chromium installed above
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+
+# Set working directory
 WORKDIR /app
 
-# Copy project files
+# Copy all files
 COPY . .
 
-# Clean npm cache and install dependencies
-RUN npm cache clean --force && npm install
+# Install Node dependencies
+RUN npm install
 
-# Expose the port used by your Express app
+# Expose Express port
 EXPOSE 3000
 
-# Start the bot
+# Start the server
 CMD ["node", "index.js"]
