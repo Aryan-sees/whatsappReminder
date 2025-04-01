@@ -7,15 +7,13 @@ const puppeteer = require('puppeteer'); // ✅ full puppeteer
 const app = express();
 app.use(bodyParser.json());
 
-const chromiumPath = puppeteer.executablePath(); // ✅ get bundled Chromium path
-
 const client = new Client({
-  puppeteer: {
-    executablePath: chromiumPath,
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
-  }
-});
-
+    puppeteer: {
+      // REMOVE executablePath line completely
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    }
+  });
+  
 client.on('qr', (qr) => {
   const qrLink = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qr)}&size=300x300`;
   console.log('📲 Scan this QR to authenticate:');
@@ -51,5 +49,3 @@ app.post('/send', async (req, res) => {
 app.listen(3000, () => {
   console.log('🚀 Server listening on port 3000');
 });
-
-
