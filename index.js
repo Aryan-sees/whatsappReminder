@@ -12,11 +12,9 @@ const client = new Client({
   }
 });
 
-
 client.on('qr', (qr) => {
-  const encoded = encodeURIComponent(qr);
-  const qrLink = `https://api.qrserver.com/v1/create-qr-code/?data=${encoded}&size=300x300`;
-  console.log('📲 Scan this QR from link:');
+  const qrLink = `https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qr)}&size=300x300`;
+  console.log('📲 Scan this QR to authenticate:');
   console.log(qrLink);
 });
 
@@ -26,36 +24,26 @@ client.on('ready', () => {
 
 client.initialize();
 
-// Send message to group "ReminderWA"
+// ✅ POST /send { "number": "91XXXXXXXXXX", "message": "Hi there!" }
 app.post('/send', async (req, res) => {
-  const message = req.body.message;
-  const groupName = 'ReminderWA';
+  const { number, message } = req.body;
 
-  console.log('📥 Received request with message:', message);
+  if (!number || !message) {
+    return res.status(400).send('❌ Missing number or message');
+  }
+
+  const chatId = `${number}@c.us`;
 
   try {
-    const chats = await client.getChats();
-    const group = chats.find(chat => chat.isGroup && chat.name === groupName);
-
-    if (!group) {
-      console.log('❌ Group not found');
-      return res.status(404).send('Group not found');
-    }
-
-    console.log('📤 Sending message to:', group.name);
-
-    await client.sendMessage(group.id._serialized, message);
-
-    console.log('✅ Message sent successfully!');
+    await client.sendMessage(chatId, message);
+    console.log(`✅ Sent to ${number}: ${message}`);
     res.status(200).send('✅ Message sent!');
   } catch (error) {
-    console.error('❌ Error while sending message:', error);
-    res.status(500).send('❌ Error sending message');
+    console.error('❌ Error:', error);
+    res.status(500).send('❌ Failed to send message');
   }
 });
 
-
-
 app.listen(3000, () => {
-  console.log('🚀 Webhook listening on port 3000');
+  console.log('🚀 Server listening on port 3000');
 });
