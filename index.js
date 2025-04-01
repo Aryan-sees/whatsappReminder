@@ -28,11 +28,15 @@ client.initialize();
 app.post('/send', async (req, res) => {
   const { number, message } = req.body;
 
+  console.log("Reached here");
+
   if (!number || !message) {
     return res.status(400).send('❌ Missing number or message');
   }
 
   const chatId = `${number}@c.us`;
+
+  console.log("Reached here 2");
 
   try {
     await client.sendMessage(chatId, message);
