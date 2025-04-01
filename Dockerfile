@@ -1,6 +1,6 @@
 FROM node:18-slim
 
-# Chromium dependencies
+# Install Chromium dependencies
 RUN apt-get update && apt-get install -y \
     wget \
     ca-certificates \
@@ -28,7 +28,7 @@ RUN apt-get update && apt-get install -y \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# App directory
+# Set working directory
 WORKDIR /app
 
 # Copy files
@@ -37,8 +37,8 @@ COPY . .
 # Install dependencies
 RUN npm install --legacy-peer-deps
 
-# Expose port
+# Expose the port used by Express
 EXPOSE 3000
 
-# Start bot
+# Start the app
 CMD ["node", "index.js"]
