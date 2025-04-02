@@ -1,27 +1,11 @@
 {
-  "name": "whatsappreminder",
+  "name": "yt-audio-trim",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Aryan-sees/whatsappReminder.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Aryan-sees/whatsappReminder/issues"
-  },
-  "homepage": "https://github.com/Aryan-sees/whatsappReminder#readme",
-  "description": "",
   "dependencies": {
-    "body-parser": "^2.2.0",
-    "express": "^5.1.0",
-    "puppeteer": "^24.5.0",
-    "qrcode": "^1.5.4",
-    "whatsapp-web.js": "^1.27.0"
+    "express": "^4.18.2"
   }
 }
